@@ -1,0 +1,1 @@
+1. http://realmojo.tistory.com/147 (how to install golang)
