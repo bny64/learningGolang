@@ -1,8 +1,8 @@
-package main
+package _main
 
 import "fmt"
 
-func main() {
+func _main() {
 	i := 10
 
 	if i >= 5 {
