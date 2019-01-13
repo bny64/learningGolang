@@ -2,7 +2,8 @@ package main
 
 import "fmt"
 
-func main() {
+//before4
+func main5() {
 	//slice를 만드는 방법
 	//선언과 할당을 동시에
 	a_1 := []int{1, 2, 3, 4, 5}
@@ -19,6 +20,7 @@ func main() {
 	a_4 := a_3[0:3]
 	fmt.Println(a_4)
 
+	//부분 슬라이스에서 파라미터는 차례로 시작인덱스, 끝 인덱스, 용량
 	a_5 := a_3[0:len(a_3):len(a_3)]
 	//golang에서 언더스코어 쓰지 말라고 합니다.
 	fmt.Println(a_5)
