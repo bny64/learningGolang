@@ -11,7 +11,7 @@ func world() {
 }
 
 //before 4
-func main() {
+func main5() {
 	//defer은 현재 함수가 끝나기 바로 직전에 호출됨
 	defer world()
 	hello2()
