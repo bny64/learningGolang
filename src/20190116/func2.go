@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 //before main1
-func main() {
+func main2() {
 	r := sumsum(2, 3, 4, 5, 6)
 	fmt.Println(r)
 
