@@ -15,7 +15,7 @@ func f2() {
 
 }
 
-func main() {
+func main2() {
 	f2()
 	fmt.Println("hello.world!")
 }
