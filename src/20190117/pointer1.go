@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 //before main2
-func main() {
+func main3() {
 
 	//포인터는 변수다!!
 	var pointerVal *int
