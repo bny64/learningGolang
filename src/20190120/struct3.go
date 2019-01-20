@@ -26,7 +26,7 @@ func (_ Rectangle) dummy() {
 	fmt.Println("dummy")
 }
 
-func main() {
+func main3() {
 
 	defer func() {
 		r := recover()
@@ -50,8 +50,8 @@ func main() {
 	//fmt.Println(rect3)
 
 	var r Rectangle
-	var i int
+	//var i int
 	r.dummy()
-	i.dummy() // error
+	//i.dummy() // error
 
 }
