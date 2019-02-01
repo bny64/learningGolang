@@ -14,7 +14,7 @@ func CalculateValue(c chan int) {
 	fmt.Println("This executes regardless as the send is now non-blocking")
 }
 
-func main() {
+func main1() {
 	fmt.Println("Go Channel Tutorial")
 
 	valueChannel := make(chan int, 2)
