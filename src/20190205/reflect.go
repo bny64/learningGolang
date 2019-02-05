@@ -9,7 +9,7 @@ type Data struct {
 	a, b int
 }
 
-func main() {
+func main1() {
 	num := 1
 	fmt.Println(reflect.TypeOf(num))
 
