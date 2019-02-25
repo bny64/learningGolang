@@ -1,1 +1,1 @@
-50.3 문자열을 화면에 출력하기 까지 완료
+Hello, have a good day!
