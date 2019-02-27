@@ -10,7 +10,8 @@ type Student struct {
 	score float32
 }
 
-type By func(s1, s2 *Student) bool //By s1,s2를 파라미터로 받고 bool을 리턴하는 함수 타입
+//By s1,s2를 파라미터로 받고 bool을 리턴하는 함수 타입
+type By func(s1, s2 *Student) bool 
 
 type studentSorter struct{
 	students []Student
