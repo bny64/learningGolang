@@ -16,6 +16,6 @@ func sum(a, b C.int) C.int {
 	return a + b
 }
 
-func main() {
+func main2() {
 	C.CExample()
 }
