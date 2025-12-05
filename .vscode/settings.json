@@ -1,0 +1,22 @@
+{
+    "workbench.colorTheme": "greenery",
+    "workbench.iconTheme": "material-icon-theme",
+    "editor.fontSize": 20,
+    "editor.fontFamily": "D2Coding ligature, Consolas, 'Courier New', monospace",
+    "indentRainbow.colors": [
+        "rgba(222,9,47,0.17)",
+        "rgba(222,68,9,0.17)",
+        "rgba(255,220,0,0.17)",
+        "rgba(27,255,0,0.17)",
+        "rgba(0,102,255,0.17)",
+        "rgba(16,0,9,255.17)",
+    ],
+    "workbench.colorCustomizations": {
+        "editorBracketHighlight.foreground1": "#d95668",
+        "editorBracketHighlight.foreground2": "#d3a074",
+        "editorBracketHighlight.foreground3": "#e0e16a",
+        "editorBracketHighlight.foreground4": "#71e16a",
+        "editorBracketHighlight.foreground5": "#5b78c9",
+        "editorBracketHighlight.foreground6": "#ab07f7"
+    },
+}
