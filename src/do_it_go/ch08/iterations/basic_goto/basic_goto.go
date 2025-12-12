@@ -1,0 +1,33 @@
+package main
+
+import "fmt"
+
+func main() {
+	var answer, name string
+
+askYesOrNo:
+	fmt.Print("관심 있는 연예인 있나요? (네/아니오): ")
+	fmt.Scanf("%s\n", &answer)
+
+	if answer == "아니오" {
+		goto askProgramExit
+	}
+
+	fmt.Print("이름이 무엇인가요?: ")
+	fmt.Scanf("%s\n", &name)
+
+askProgramExit:
+	if name == "" || name == "아니오" {
+		var programExitAnswer string
+		fmt.Print("그러면 프로그램을 끝낼까요? (네/아니오): ")
+		fmt.Scanf("%s\n", &programExitAnswer)
+
+		if programExitAnswer == "네" {
+			goto exit
+		}
+		goto askYesOrNo
+	}
+	fmt.Printf("%s님이군요. 관심사 땡큐!\n", name)
+
+exit:
+}
