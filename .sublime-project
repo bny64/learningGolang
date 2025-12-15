@@ -1,0 +1,41 @@
+{
+	"folders": [
+    {
+      "path": "."
+    }
+  ],
+  "debugger_configurations": [
+    {
+      "name": "Debug Go Program",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${file}",
+      "cwd": "${folder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Debug Go Package",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${folder}",
+      "cwd": "${folder}"
+    },
+    {
+      "name": "Debug Go Test",
+      "type": "go",
+      "request": "launch",
+      "mode": "test",
+      "program": "${folder}",
+      "cwd": "${folder}"
+    },
+    {
+      "name": "Attach to Process",
+      "type": "go",
+      "request": "attach",
+      "mode": "local",
+      "processId": "${command:pickProcess}"
+    }
+  ]
+}
