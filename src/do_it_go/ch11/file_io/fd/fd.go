@@ -16,7 +16,7 @@ func main() {
 
 	fd := int(file.Fd())
 	fmt.Printf("File Descriptor: %d\n", fd)
-
+	
 	info, err := file.Stat()
 	if err != nil {
 		fmt.Println(err)
