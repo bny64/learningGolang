@@ -1,0 +1,12 @@
+# Binaries and templates
+bin/
+pkg/
+src/**/pkg/
+
+# IDEs
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
