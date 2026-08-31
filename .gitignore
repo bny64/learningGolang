@@ -1,7 +1,7 @@
 # Binaries and templates
 bin/
-pkg/
-src/**/pkg/
+# pkg/
+# src/**/pkg/
 
 # IDEs
 .idea/
