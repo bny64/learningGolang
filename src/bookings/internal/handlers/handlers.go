@@ -5,34 +5,33 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/bny64/bookings/pkg/config"
-	"github.com/bny64/bookings/pkg/models"
-	"github.com/bny64/bookings/pkg/render"
+	"github.com/bny64/bookings/internal/config"
+	"github.com/bny64/bookings/internal/forms"
+	"github.com/bny64/bookings/internal/models"
+	"github.com/bny64/bookings/internal/render"
 )
 
-// TemplateData holds data sent from handlers to templates
-
-// Repo is the repository used by the handlers
+// Repo는 핸들러들이 사용하는 리포지토리 인스턴스입니다.
 var Repo *Repository
 
-// Repository is the repository type
+// Repository는 리포지토리 구조체 타입입니다.
 type Repository struct {
 	App *config.AppConfig
 }
 
-// NewRepo creates a new repository
+// NewRepo는 새로운 리포지토리를 생성합니다.
 func NewRepo(a *config.AppConfig) *Repository {
 	return &Repository{
 		App: a,
 	}
 }
 
-// NewHandlers sets the repository for the handlers
+// NewHandlers는 핸들러에 사용할 리포지토리를 설정합니다.
 func NewHandlers(r *Repository) {
 	Repo = r
 }
 
-// Home is the home page handler
+// Home은 홈 페이지 핸들러입니다.
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested URL:", r.URL.Path)
 
@@ -42,7 +41,7 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, r, "home.page.tmpl", &models.TemplateData{})
 }
 
-// About is the about page handler
+// About은 소개 페이지 핸들러입니다.
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested URL:", r.URL.Path)
 	stringMap := make(map[string]string)
@@ -58,27 +57,63 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// Reservation is the reservation page handler
+// Reservation은 예약 페이지 핸들러입니다.
 func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+	})
 }
 
-// Generals is the Generals page handler
+// PostReservation은 예약 처리(POST) 핸들러입니다.
+func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	reservation := models.Reservation{
+		FirstName: r.Form.Get("first_name"),
+		LastName:  r.Form.Get("last_name"),
+		Email:     r.Form.Get("email"),
+		Phone:     r.Form.Get("phone"),
+	}
+
+	form := forms.New(r.PostForm)
+
+	form.Has("first_name", r)
+	form.Has("last_name", r)
+	form.Has("email", r)
+	form.Has("phone", r)
+
+	if !form.Valid() {
+		data := map[string]interface{}{}
+		data["reservation"] = reservation
+
+		render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+}
+
+// Generals는 장군(Generals) 객실 페이지 핸들러입니다.
 func (m *Repository) Generals(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, r, "generals.page.tmpl", &models.TemplateData{})
 }
 
-// Majors is the Majors page handler
+// Majors는 소령(Majors) 객실 페이지 핸들러입니다.
 func (m *Repository) Majors(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, r, "majors.page.tmpl", &models.TemplateData{})
 }
 
-// Availability is the Search Availability page handler
+// Availability는 예약 가능 여부 조회 페이지 핸들러입니다.
 func (m *Repository) Availability(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, r, "search-availability.page.tmpl", &models.TemplateData{})
 }
 
-// PostAvailability is the Search Availability page handler
+// PostAvailability는 예약 가능 여부 조회 처리(POST) 핸들러입니다.
 func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
 	start := r.Form.Get("start")
 	end := r.Form.Get("end")
@@ -90,7 +125,7 @@ type jsonResponse struct {
 	Message string `json:"message"`
 }
 
-// AvailabilityJSON handles request for availability and send JSON response
+// AvailabilityJSON은 예약 가능 여부를 확인하고 JSON 응답을 전송하는 핸들러입니다.
 func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 	resp := jsonResponse{
 		OK:      true,
@@ -107,7 +142,7 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 	w.Write(out)
 }
 
-// Contact is the Contact page handler
+// Contact는 문의 페이지 핸들러입니다.
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, r, "contact.page.tmpl", &models.TemplateData{})
 }
