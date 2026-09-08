@@ -1,8 +1,12 @@
 package forms
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
+
+	"github.com/asaskevich/govalidator"
 )
 
 // Form 구조체는 폼 데이터와 검증 에러 정보를 포함합니다.
@@ -24,14 +28,41 @@ func New(data url.Values) *Form {
 	}
 }
 
+// Required는 폼에 특정 필드들이 모두 존재하는지 확인합니다.
+func (f *Form) Required(fields ...string) {
+	for _, field := range fields {
+		value := f.Get(field)
+		if strings.TrimSpace(value) == "" {
+			f.Errors.Add(field, "This field cannot be empty")
+		}
+	}
+}
+
 // Has 메서드는 HTTP 요청의 폼 데이터에 특정 필드가 존재하고 값이 비어있지 않은지 확인합니다.
 func (f *Form) Has(field string, r *http.Request) bool {
 	x := r.Form.Get(field)
 
 	if x == "" {
-		f.Errors.Add(field, "This field cannot be empty")
 		return false
 	}
 
 	return true
+}
+
+// MinLength는 폼 필드의 최소 길이를 검증합니다.
+func (f *Form) MinLength(field string, length int, r *http.Request) bool {
+	value := r.Form.Get(field)
+	if len(value) < length {
+		f.Errors.Add(field, fmt.Sprintf("This field must be at least %d characters long", length))
+		return false
+	}
+	return true
+}
+
+// IsEmail는 폼 필드가 유효한 이메일 형식인지 검증합니다.
+func (f *Form) IsEmail(field string) {
+	value := f.Get(field)
+	if !govalidator.IsEmail(value) {
+		f.Errors.Add(field, "Invalid email address")
+	}
 }
