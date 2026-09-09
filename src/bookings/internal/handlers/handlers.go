@@ -90,7 +90,7 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	form.IsEmail("email")
 
 	if !form.Valid() {
-		data := map[string]interface{}{}
+		data := make(map[string]interface{})
 		data["reservation"] = reservation
 
 		render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
@@ -99,6 +99,11 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+
+	// main.go에서 gob.Register(models.Reservation{})로 타입을 등록해 두었기 때문에
+	// 사용자 정의 구조체인 reservation을 세션에 직렬화하여 저장할 수 있습니다.
+	m.App.Session.Put(r.Context(), "reservation", reservation)
+	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther)
 }
 
 // Generals는 장군(Generals) 객실 페이지 핸들러입니다.
@@ -148,4 +153,23 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 // Contact는 문의 페이지 핸들러입니다.
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, r, "contact.page.tmpl", &models.TemplateData{})
+}
+
+// ReservationSummary는 예약 요약 페이지 핸들러입니다.
+func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
+	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
+	if !ok {
+		log.Println("cannot get reservation from session")
+		m.App.Session.Put(r.Context(), "error", "Can't get reservation from session")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
+	m.App.Session.Remove(r.Context(), "reservation")
+	data := make(map[string]interface{})
+	data["reservation"] = reservation
+
+	render.RenderTemplate(w, r, "reservation-summary.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
 }

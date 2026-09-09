@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/bny64/bookings/internal/config"
 	"github.com/bny64/bookings/internal/handlers"
+	"github.com/bny64/bookings/internal/models"
 	"github.com/bny64/bookings/internal/render"
 )
 
@@ -19,6 +21,11 @@ var session *scs.SessionManager
 
 // main is the application function
 func main() {
+
+	// 세션(scs)은 내부적으로 encoding/gob을 사용하여 데이터를 직렬화/역직렬화합니다.
+	// 기본(primitive) 타입 외에 models.Reservation 같은 사용자 정의 구조체를 세션에 저장하려면
+	// gob 패키지에 미리 타입을 등록(Register)해야 런타임 오류 없이 저장 및 조회가 가능합니다.
+	gob.Register(models.Reservation{})
 
 	//change this to true when in production
 	app.InProduction = false

@@ -1,6 +1,6 @@
 # Binaries and templates
 bin/
-# pkg/
+pkg/
 # src/**/pkg/
 
 # IDEs
