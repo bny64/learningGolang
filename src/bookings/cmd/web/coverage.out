@@ -1,0 +1,12 @@
+mode: set
+github.com/bny64/bookings/cmd/web/main.go:23.13,27.16 2 0
+github.com/bny64/bookings/cmd/web/main.go:27.16,29.3 1 0
+github.com/bny64/bookings/cmd/web/main.go:34.2,43.16 4 0
+github.com/bny64/bookings/cmd/web/main.go:46.18,66.16 10 1
+github.com/bny64/bookings/cmd/web/main.go:66.16,69.3 2 0
+github.com/bny64/bookings/cmd/web/main.go:71.2,78.12 6 1
+github.com/bny64/bookings/cmd/web/middleware.go:11.53,12.71 1 0
+github.com/bny64/bookings/cmd/web/middleware.go:12.71,15.3 2 0
+github.com/bny64/bookings/cmd/web/middleware.go:19.45,30.2 3 1
+github.com/bny64/bookings/cmd/web/middleware.go:33.50,35.2 1 1
+github.com/bny64/bookings/cmd/web/routes.go:12.49,43.2 18 1
