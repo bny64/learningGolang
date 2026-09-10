@@ -1,0 +1,25 @@
+mode: set
+github.com/bny64/bookings/internal/render/render.go:21.40,23.2 1 1
+github.com/bny64/bookings/internal/render/render.go:25.84,31.2 5 1
+github.com/bny64/bookings/internal/render/render.go:33.105,36.18 2 1
+github.com/bny64/bookings/internal/render/render.go:36.18,40.3 1 0
+github.com/bny64/bookings/internal/render/render.go:40.8,42.3 1 1
+github.com/bny64/bookings/internal/render/render.go:45.2,46.9 2 1
+github.com/bny64/bookings/internal/render/render.go:46.9,48.3 1 1
+github.com/bny64/bookings/internal/render/render.go:50.2,55.16 4 1
+github.com/bny64/bookings/internal/render/render.go:55.16,58.3 2 0
+github.com/bny64/bookings/internal/render/render.go:61.2,62.16 2 1
+github.com/bny64/bookings/internal/render/render.go:62.16,64.3 1 0
+github.com/bny64/bookings/internal/render/render.go:66.2,66.12 1 1
+github.com/bny64/bookings/internal/render/render.go:69.67,75.16 3 1
+github.com/bny64/bookings/internal/render/render.go:75.16,77.3 1 0
+github.com/bny64/bookings/internal/render/render.go:80.2,80.29 1 1
+github.com/bny64/bookings/internal/render/render.go:80.29,83.17 3 1
+github.com/bny64/bookings/internal/render/render.go:83.17,85.4 1 0
+github.com/bny64/bookings/internal/render/render.go:87.3,88.17 2 1
+github.com/bny64/bookings/internal/render/render.go:88.17,90.4 1 0
+github.com/bny64/bookings/internal/render/render.go:92.3,92.23 1 1
+github.com/bny64/bookings/internal/render/render.go:92.23,94.18 2 1
+github.com/bny64/bookings/internal/render/render.go:94.18,96.5 1 0
+github.com/bny64/bookings/internal/render/render.go:98.3,98.21 1 1
+github.com/bny64/bookings/internal/render/render.go:100.2,100.21 1 1
