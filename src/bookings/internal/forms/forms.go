@@ -2,7 +2,6 @@ package forms
 
 import (
 	"fmt"
-	"net/http"
 	"net/url"
 	"strings"
 
@@ -39,8 +38,8 @@ func (f *Form) Required(fields ...string) {
 }
 
 // Has 메서드는 HTTP 요청의 폼 데이터에 특정 필드가 존재하고 값이 비어있지 않은지 확인합니다.
-func (f *Form) Has(field string, r *http.Request) bool {
-	x := r.Form.Get(field)
+func (f *Form) Has(field string) bool {
+	x := f.Get(field)
 
 	if x == "" {
 		return false
@@ -50,8 +49,8 @@ func (f *Form) Has(field string, r *http.Request) bool {
 }
 
 // MinLength는 폼 필드의 최소 길이를 검증합니다.
-func (f *Form) MinLength(field string, length int, r *http.Request) bool {
-	value := r.Form.Get(field)
+func (f *Form) MinLength(field string, length int) bool {
+	value := f.Get(field)
 	if len(value) < length {
 		f.Errors.Add(field, fmt.Sprintf("This field must be at least %d characters long", length))
 		return false
