@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
+	"github.com/bny64/bookings/helpers"
 	"github.com/bny64/bookings/internal/config"
 	"github.com/bny64/bookings/internal/handlers"
 	"github.com/bny64/bookings/internal/models"
@@ -18,6 +20,8 @@ const portNumber = ":8080"
 
 var app config.AppConfig
 var session *scs.SessionManager
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 // main is the application function
 func main() {
@@ -50,6 +54,12 @@ func run() error {
 	// gob 패키지에 미리 타입을 등록(Register)해야 런타임 오류 없이 저장 및 조회가 가능합니다.
 	gob.Register(models.Reservation{})
 
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+
+	errorLog = log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
+
 	//change this to true when in production
 	app.InProduction = false
 
@@ -74,6 +84,6 @@ func run() error {
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)
 	render.NewTemplates(&app)
-
+	helpers.NewHelpers(&app)
 	return nil
 }
