@@ -11,6 +11,7 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/bny64/bookings/helpers"
 	"github.com/bny64/bookings/internal/config"
+	"github.com/bny64/bookings/internal/driver"
 	"github.com/bny64/bookings/internal/handlers"
 	"github.com/bny64/bookings/internal/models"
 	"github.com/bny64/bookings/internal/render"
@@ -26,11 +27,12 @@ var errorLog *log.Logger
 // main is the application function
 func main() {
 
-	err := run()
+	db, err := run()
 
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.SQL.Close()
 
 	// http.HandleFunc("/", handlers.Repo.Home)
 	// http.HandleFunc("/about", handlers.Repo.About)
@@ -47,7 +49,7 @@ func main() {
 	log.Fatal(err)
 }
 
-func run() error {
+func run() (*driver.DB, error) {
 
 	// 세션(scs)은 내부적으로 encoding/gob을 사용하여 데이터를 직렬화/역직렬화합니다.
 	// 기본(primitive) 타입 외에 models.Reservation 같은 사용자 정의 구조체를 세션에 저장하려면
@@ -71,19 +73,28 @@ func run() error {
 
 	app.Session = session
 
+	//데이터베이스를 연결
+	log.Println("Connecting to database...")
+	db, err := driver.ConnectSQL("host=bny64.ddns.net port=30004 dbname=bookings user=bny64 password=Namyul64!")
+	if err != nil {
+		log.Fatal("cannot connect to database", err)
+	}
+
+	fmt.Println("Successfully connected to database")
+
 	tc, err := render.CreateTemplateCache()
 
 	if err != nil {
 		log.Fatal("cannot create template cache", err)
-		return err
+		return nil, err
 	}
 
 	app.TemplateCache = tc
 	app.UseCache = false
 
-	repo := handlers.NewRepo(&app)
+	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)
 	render.NewTemplates(&app)
 	helpers.NewHelpers(&app)
-	return nil
+	return db, nil
 }

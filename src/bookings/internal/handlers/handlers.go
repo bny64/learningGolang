@@ -7,9 +7,12 @@ import (
 
 	"github.com/bny64/bookings/helpers"
 	"github.com/bny64/bookings/internal/config"
+	"github.com/bny64/bookings/internal/driver"
 	"github.com/bny64/bookings/internal/forms"
 	"github.com/bny64/bookings/internal/models"
 	"github.com/bny64/bookings/internal/render"
+	"github.com/bny64/bookings/internal/repository"
+	"github.com/bny64/bookings/internal/repository/dbrepo"
 )
 
 // Repo는 핸들러들이 사용하는 리포지토리 인스턴스입니다.
@@ -18,12 +21,14 @@ var Repo *Repository
 // Repository는 리포지토리 구조체 타입입니다.
 type Repository struct {
 	App *config.AppConfig
+	DB  repository.DatabaseRepo
 }
 
 // NewRepo는 새로운 리포지토리를 생성합니다.
-func NewRepo(a *config.AppConfig) *Repository {
+func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 	return &Repository{
 		App: a,
+		DB:  dbrepo.NewPostgresRepo(db.SQL, a),
 	}
 }
 
