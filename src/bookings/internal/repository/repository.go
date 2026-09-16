@@ -1,9 +1,15 @@
 package repository
 
-import "github.com/bny64/bookings/internal/models"
+import (
+	"time"
+
+	"github.com/bny64/bookings/internal/models"
+)
 
 type DatabaseRepo interface {
 	AllUsers() bool
 
-	InsertReservation(res models.Reservation) error
+	InsertReservation(res models.Reservation) (int, error)
+	InsertRoomRestriction(r models.RoomRestriction) error
+	SearchAvailablilityByDates(start, end time.Time, roomID int) (bool, error)
 }

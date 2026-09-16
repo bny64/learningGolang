@@ -32,17 +32,19 @@ type Restriction struct {
 
 // RoomRestriction is the room_restrictions model
 type RoomRestriction struct {
-	ID        int
-	Firstname string
-	Lastname  string
-	Email     string
-	Phone     string
-	StartDate time.Time
-	EndDate   time.Time
-	RoomID    int
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Room      Room
+	ID            int
+	Firstname     string
+	Lastname      string
+	Email         string
+	Phone         string
+	StartDate     time.Time
+	EndDate       time.Time
+	RoomID        int
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Room          Room
+	ReservationID int
+	RestrictionID int
 }
 
 //Reservation is the reservations model
