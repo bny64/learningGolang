@@ -55,6 +55,10 @@ func run() (*driver.DB, error) {
 	// 기본(primitive) 타입 외에 models.Reservation 같은 사용자 정의 구조체를 세션에 저장하려면
 	// gob 패키지에 미리 타입을 등록(Register)해야 런타임 오류 없이 저장 및 조회가 가능합니다.
 	gob.Register(models.Reservation{})
+	gob.Register(models.User{})
+	gob.Register(models.Room{})
+	gob.Register(models.Restriction{})
+	gob.Register(models.RoomRestriction{})
 
 	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	app.InfoLog = infoLog
@@ -94,7 +98,7 @@ func run() (*driver.DB, error) {
 
 	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 	helpers.NewHelpers(&app)
 	return db, nil
 }
