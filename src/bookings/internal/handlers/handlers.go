@@ -61,29 +61,31 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 // Reservation은 예약 페이지 핸들러입니다.
 func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
 
-	res, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
+	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
 	if !ok {
 		helpers.ServerError(w, errors.New("cannot get reservation from session"))
 		return
 	}
 
-	room, err := m.DB.GetRoomByID(res.RoomID)
+	room, err := m.DB.GetRoomByID(reservation.RoomID)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
 
-	res.Room.RoomName = room.RoomName
+	reservation.Room.RoomName = room.RoomName
 
-	sd := res.StartDate.Format("2006-01-02")
-	ed := res.EndDate.Format("2006-01-02")
+	m.App.Session.Put(r.Context(), "reservation", reservation)
+
+	sd := reservation.StartDate.Format("2006-01-02")
+	ed := reservation.EndDate.Format("2006-01-02")
 
 	stringMap := make(map[string]string)
 	stringMap["start_date"] = sd
 	stringMap["end_date"] = ed
 
 	data := make(map[string]interface{})
-	data["reservation"] = res
+	data["reservation"] = reservation
 	render.Template(w, r, "make-reservation.page.tmpl", &models.TemplateData{
 		Form:      forms.New(nil),
 		Data:      data,
@@ -93,44 +95,23 @@ func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
 
 // PostReservation은 예약 처리(POST) 핸들러입니다.
 func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
+
+	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
+	if !ok {
+		helpers.ServerError(w, errors.New("cannot get reservation from session"))
+		return
+	}
+
 	err := r.ParseForm()
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
 	}
 
-	sd := r.Form.Get("start_date")
-	ed := r.Form.Get("end_date")
-
-	layout := "2006-01-02"
-
-	startDate, err := time.Parse(layout, sd)
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-
-	endDate, err := time.Parse(layout, ed)
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-
-	roomID, err := strconv.Atoi(r.Form.Get("room_id"))
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-
-	reservation := models.Reservation{
-		FirstName: r.Form.Get("first_name"),
-		LastName:  r.Form.Get("last_name"),
-		Email:     r.Form.Get("email"),
-		Phone:     r.Form.Get("phone"),
-		StartDate: startDate,
-		EndDate:   endDate,
-		RoomID:    roomID,
-	}
+	reservation.FirstName = r.Form.Get("first_name")
+	reservation.LastName = r.Form.Get("last_name")
+	reservation.Email = r.Form.Get("email")
+	reservation.Phone = r.Form.Get("phone")
 
 	form := forms.New(r.PostForm)
 
@@ -155,10 +136,12 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	m.App.Session.Put(r.Context(), "reservation", reservation)
+
 	restriction := models.RoomRestriction{
-		StartDate:     startDate,
-		EndDate:       endDate,
-		RoomID:        roomID,
+		StartDate:     reservation.StartDate,
+		EndDate:       reservation.EndDate,
+		RoomID:        reservation.RoomID,
 		ReservationID: newReservationID,
 		RestrictionID: 1,
 	}
@@ -172,6 +155,7 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	// main.go에서 gob.Register(models.Reservation{})로 타입을 등록해 두었기 때문에
 	// 사용자 정의 구조체인 reservation을 세션에 직렬화하여 저장할 수 있습니다.
 	m.App.Session.Put(r.Context(), "reservation", reservation)
+
 	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther)
 }
 
@@ -244,9 +228,26 @@ type jsonResponse struct {
 
 // AvailabilityJSON은 예약 가능 여부를 확인하고 JSON 응답을 전송하는 핸들러입니다.
 func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	sd := r.Form.Get("start")
+	ed := r.Form.Get("end")
+
+	layout := "2006-01-02"
+	startDate, _ := time.Parse(layout, sd)
+	endDate, _ := time.Parse(layout, ed)
+
+	roomID, _ := strconv.Atoi(r.Form.Get("room_id"))
+
+	available, _ := m.DB.SearchAvailablilityByDatesByRoomID(startDate, endDate, roomID)
+
 	resp := jsonResponse{
-		OK:      true,
-		Message: "Available!",
+		OK:      available,
+		Message: "",
 	}
 
 	out, err := json.MarshalIndent(resp, "", "     ")
@@ -268,6 +269,7 @@ func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
 // ReservationSummary는 예약 요약 페이지 핸들러입니다.
 func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
 	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
+
 	if !ok {
 		m.App.ErrorLog.Println("Can't get reservation from session")
 		m.App.Session.Put(r.Context(), "error", "Can't get reservation from session")
@@ -276,11 +278,20 @@ func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) 
 	}
 
 	m.App.Session.Remove(r.Context(), "reservation")
+
 	data := make(map[string]interface{})
 	data["reservation"] = reservation
 
+	sd := reservation.StartDate.Format("2006-01-02")
+	ed := reservation.EndDate.Format("2006-01-02")
+
+	stringMap := make(map[string]string)
+	stringMap["start_date"] = sd
+	stringMap["end_date"] = ed
+
 	render.Template(w, r, "reservation-summary.page.tmpl", &models.TemplateData{
-		Data: data,
+		Data:      data,
+		StringMap: stringMap,
 	})
 }
 
