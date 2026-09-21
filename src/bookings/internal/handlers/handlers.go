@@ -36,6 +36,14 @@ func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 	}
 }
 
+// NewTestRepo는 새로운 리포지토리를 생성합니다.
+func NewTestRepo(a *config.AppConfig) *Repository {
+	return &Repository{
+		App: a,
+		DB:  dbrepo.NewTestingsRepo(a),
+	}
+}
+
 // NewHandlers는 핸들러에 사용할 리포지토리를 설정합니다.
 func NewHandlers(r *Repository) {
 	Repo = r
