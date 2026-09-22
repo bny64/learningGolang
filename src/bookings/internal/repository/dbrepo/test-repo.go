@@ -14,11 +14,19 @@ func (m *testDBRepo) AllUsers() bool {
 
 // InsertReservation은 예약 정보를 데이터베이스에 저장합니다.
 func (m *testDBRepo) InsertReservation(res models.Reservation) (int, error) {
+	// if the room id is 2, then fail, otherwise, pass
+	if res.RoomID == 2 {
+		return 0, errors.New("Something went wrong")
+	}
 	return 1, nil
 }
 
 // InsertRoomRestriction은 예약 정보를 데이터베이스에 저장합니다.
 func (m *testDBRepo) InsertRoomRestriction(r models.RoomRestriction) error {
+	// if the room id is 1000, then fail, otherwise, pass
+	if r.RoomID == 1000 {
+		return errors.New("Something went wrong")
+	}
 	return nil
 }
 
