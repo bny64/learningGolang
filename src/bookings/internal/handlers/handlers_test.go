@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/bny64/bookings/internal/models"
@@ -20,16 +21,16 @@ var theTests = []struct {
 	name               string
 	url                string
 	method             string
-	params             []postData
 	expectedStatusCode int
 }{
-	// {"home", "/", "GET", []postData{}, http.StatusOK},
-	// {"about", "/about", "GET", []postData{}, http.StatusOK},
-	// {"gq", "/generals-quarters", "GET", []postData{}, http.StatusOK},
-	// {"ms", "/majors-suite", "GET", []postData{}, http.StatusOK},
-	// {"sa", "/search-availability", "GET", []postData{}, http.StatusOK},
-	// {"contact", "/contact", "GET", []postData{}, http.StatusOK},
-	// {"sa", "/make-reservation", "GET", []postData{}, http.StatusOK},
+	{"home", "/", "GET", http.StatusOK},
+	{"about", "/about", "GET", http.StatusOK},
+	{"gq", "/generals-quarters", "GET", http.StatusOK},
+	{"ms", "/majors-suite", "GET", http.StatusOK},
+	{"sa", "/search-availability", "GET", http.StatusOK},
+	{"contact", "/contact", "GET", http.StatusOK},
+	{"sa", "/make-reservation", "GET", http.StatusOK},
+
 	// {"post-search-avail", "/search-availability", "POST", []postData{
 	// 	{key: "start", value: "2020-01-01"},
 	// 	{key: "end", value: "2020-01-02"},
@@ -54,34 +55,17 @@ func TestHandlers(t *testing.T) {
 
 	for _, e := range theTests {
 		t.Run(e.name, func(t *testing.T) {
-			if e.method == "GET" {
-				resp, err := ts.Client().Get(ts.URL + e.url)
-				if err != nil {
-					t.Log(err)
-					t.Fatal()
-				}
-
-				if resp.StatusCode != e.expectedStatusCode {
-					t.Errorf("for %s, expcted %d but got %d", e.name, e.expectedStatusCode, resp.StatusCode)
-					t.Fatal()
-				}
-
-			} else {
-				values := url.Values{}
-				for _, x := range e.params {
-					values.Add(x.key, x.value)
-				}
-
-				resp, err := ts.Client().PostForm(ts.URL+e.url, values)
-				if err != nil {
-					t.Log(err)
-					t.Fatal()
-				}
-
-				if resp.StatusCode != e.expectedStatusCode {
-					t.Errorf("for %s, expcted %d but got %d", e.name, e.expectedStatusCode, resp.StatusCode)
-				}
+			resp, err := ts.Client().Get(ts.URL + e.url)
+			if err != nil {
+				t.Log(err)
+				t.Fatal()
 			}
+
+			if resp.StatusCode != e.expectedStatusCode {
+				t.Errorf("for %s, expcted %d but got %d", e.name, e.expectedStatusCode, resp.StatusCode)
+				t.Fatal()
+			}
+
 		})
 	}
 }
@@ -110,6 +94,146 @@ func TestRepository_Reservation(t *testing.T) {
 		t.Errorf("expected %d but got %d", http.StatusOK, rr.Code)
 	}
 
+	req, _ = http.NewRequest("GET", "/make-reservation", nil)
+	ctx = getCtx(req)
+	req = req.WithContext(ctx)
+	rr = httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+	if rr.Code != http.StatusTemporaryRedirect {
+		t.Errorf("expected %d but got %d", http.StatusOK, rr.Code)
+	}
+
+	req, _ = http.NewRequest("GET", "/make-reservation", nil)
+	ctx = getCtx(req)
+	req = req.WithContext(ctx)
+	rr = httptest.NewRecorder()
+	reservation.RoomID = 100
+	session.Put(ctx, "reservation", reservation)
+
+	handler.ServeHTTP(rr, req)
+	if rr.Code != http.StatusTemporaryRedirect {
+		t.Errorf("expected %d but got %d", http.StatusTemporaryRedirect, rr.Code)
+	}
+}
+
+func TestRepository_PostReservation(t *testing.T) {
+
+	reqBody := "start_date=2050-01-01"
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "end_date=2050-01-02")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "first_name=John")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "last_name=Smith")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "email=john@smith.com")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "phone=1234567890")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "room_id=1")
+
+	req, _ := http.NewRequest("POST", "/make-reservation", strings.NewReader(reqBody))
+	ctx := getCtx(req)
+
+	req = req.WithContext(ctx)
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	rr := httptest.NewRecorder()
+
+	handler := http.HandlerFunc(Repo.PostReservation)
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusSeeOther {
+		t.Errorf("expected %d but got %d", http.StatusSeeOther, rr.Code)
+	}
+
+	//test for missin post body
+	req, _ = http.NewRequest("POST", "/make-reservation", nil)
+	ctx = getCtx(req)
+
+	req = req.WithContext(ctx)
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	rr = httptest.NewRecorder()
+
+	handler = http.HandlerFunc(Repo.PostReservation)
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusTemporaryRedirect {
+		t.Errorf("expected %d but got %d", http.StatusTemporaryRedirect, rr.Code)
+	}
+
+	//test for invalid start date
+	reqBody = "start_date=invalid-date"
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "end_date=2050-01-02")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "first_name=John")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "last_name=Smith")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "email=john@smith.com")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "phone=1234567890")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "room_id=1")
+
+	req, _ = http.NewRequest("POST", "/make-reservation", strings.NewReader(reqBody))
+	ctx = getCtx(req)
+
+	req = req.WithContext(ctx)
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	rr = httptest.NewRecorder()
+
+	handler = http.HandlerFunc(Repo.PostReservation)
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusTemporaryRedirect {
+		t.Errorf("expected %d but got %d", http.StatusTemporaryRedirect, rr.Code)
+	}
+
+	//test for invalid end date
+	reqBody = "end_date=invalid-date"
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "end_date=2050-01-02")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "first_name=John")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "last_name=Smith")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "email=john@smith.com")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "phone=1234567890")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "room_id=1")
+
+	req, _ = http.NewRequest("POST", "/make-reservation", strings.NewReader(reqBody))
+	ctx = getCtx(req)
+
+	req = req.WithContext(ctx)
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	rr = httptest.NewRecorder()
+
+	handler = http.HandlerFunc(Repo.PostReservation)
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusTemporaryRedirect {
+		t.Errorf("expected %d but got %d", http.StatusTemporaryRedirect, rr.Code)
+	}
+
+	//test for invalid room id
+	reqBody = "start_date=2050-01-01"
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "end_date=2050-01-02")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "first_name=John")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "last_name=Smith")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "email=john@smith.com")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "phone=1234567890")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "room_id=invalid")
+
+	req, _ = http.NewRequest("POST", "/make-reservation", strings.NewReader(reqBody))
+	ctx = getCtx(req)
+
+	req = req.WithContext(ctx)
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	rr = httptest.NewRecorder()
+
+	handler = http.HandlerFunc(Repo.PostReservation)
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusTemporaryRedirect {
+		t.Errorf("expected %d but got %d", http.StatusTemporaryRedirect, rr.Code)
+	}
 }
 
 func getCtx(req *http.Request) context.Context {
