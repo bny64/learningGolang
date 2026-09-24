@@ -205,8 +205,8 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 
 	htmlMessage = fmt.Sprintf(`
 		<strong>Reservation Confirmation</strong>
-		Dear %s:, <br>
-		A reservation has been made for %s tfrom %s to %s.
+		<br>
+		A reservation has been made for %s from %s to %s.
 `, reservation.Room.RoomName, reservation.StartDate.Format("2006-01-02"), reservation.EndDate.Format("2006-01-02"))
 
 	msg = models.MailData{
