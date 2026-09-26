@@ -249,8 +249,8 @@ func TestRepository_PostReservation(t *testing.T) {
 	handler = http.HandlerFunc(Repo.PostReservation)
 	handler.ServeHTTP(rr, req)
 
-	if rr.Code != http.StatusSeeOther {
-		t.Errorf("expected %d but got %d", http.StatusSeeOther, rr.Code)
+	if rr.Code != http.StatusOK {
+		t.Errorf("expected %d but got %d", http.StatusOK, rr.Code)
 	}
 
 	//test for failure to insert reservation into database

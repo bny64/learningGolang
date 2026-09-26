@@ -7,8 +7,8 @@ import (
 // User is the user model
 type User struct {
 	ID          int
-	Firstname   string
-	Lastname    string
+	FirstName   string
+	LastName    string
 	Email       string
 	Password    string
 	AccessLevel int
@@ -81,8 +81,9 @@ type RoomRestrictions struct {
 
 // MailData is the mail data model
 type MailData struct {
-	To      string
-	From    string
-	Subject string
-	Content string
+	To       string
+	From     string
+	Subject  string
+	Content  string
+	Template string
 }
