@@ -1,22 +1,59 @@
 {
-    "workbench.colorTheme": "Dracula Theme",
-    "workbench.iconTheme": "material-icon-theme",
-    "editor.fontSize": 20,
-    "editor.fontFamily": "D2Coding ligature, Consolas, 'Courier New', monospace",
-    "indentRainbow.colors": [
-        "rgba(222,9,47,0.17)",
-        "rgba(222,68,9,0.17)",
-        "rgba(255,220,0,0.17)",
-        "rgba(27,255,0,0.17)",
-        "rgba(0,102,255,0.17)",
-        "rgba(16,0,9,255.17)",
-    ],
-    "workbench.colorCustomizations": {
-        "editorBracketHighlight.foreground1": "#d95668",
-        "editorBracketHighlight.foreground2": "#d3a074",
-        "editorBracketHighlight.foreground3": "#e0e16a",
-        "editorBracketHighlight.foreground4": "#71e16a",
-        "editorBracketHighlight.foreground5": "#5b78c9",
-        "editorBracketHighlight.foreground6": "#ab07f7"
+  "workbench.colorTheme": "Dracula Theme",
+  "workbench.iconTheme": "material-icon-theme",
+  "editor.fontSize": 20,
+  "editor.fontFamily": "D2Coding ligature, Consolas, 'Courier New', monospace",
+  // "indentRainbow.colors": [
+  //     "rgba(222,9,47,0.17)",
+  //     "rgba(222,68,9,0.17)",
+  //     "rgba(255,220,0,0.17)",
+  //     "rgba(27,255,0,0.17)",
+  //     "rgba(0,102,255,0.17)",
+  //     "rgba(16,0,9,255.17)",
+  // ],
+  "workbench.colorCustomizations": {
+    "editorBracketHighlight.foreground1": "#d95668",
+    "editorBracketHighlight.foreground2": "#d3a074",
+    "editorBracketHighlight.foreground3": "#e0e16a",
+    "editorBracketHighlight.foreground4": "#71e16a",
+    "editorBracketHighlight.foreground5": "#5b78c9",
+    "editorBracketHighlight.foreground6": "#ab07f7"
+  },
+  "java.compile.nullAnalysis.mode": "automatic",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell"
     },
+    "Command Prompt": {
+      "path": [
+        "${env:windir}\\Sysnative\\cmd.exe",
+        "${env:windir}\\System32\\cmd.exe"
+      ],
+      "args": []
+    },
+    "Git Bash": {
+      "path": "D:\\\\Git\\bin\\bash.exe",
+      "args": ["--login", "-i"]
+    }
+  },
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "python.languageServer": "Default",
+  "editor.formatOnSave": false,
+  "editor.unicodeHighlight.invisibleCharacters": false,
+  "editor.unicodeHighlight.ambiguousCharacters": false,
+  "go.toolsManagement.autoUpdate": true,
+  "files.associations": {
+    "*.tmpl": "go-template",
+    "*.gohtml": "go-template"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "editor.tabSize": 2,
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
