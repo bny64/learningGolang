@@ -1,8 +1,8 @@
 {{template "admin" .}}
 
-    {{define "css"}}
-        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" type="text/css">
-    {{end}}
+{{define "css"}}
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" type="text/css">
+{{end}}
 
 {{define "page-title"}}
     All Reservations
@@ -26,7 +26,7 @@
                 {{range $res}}
                     <tr>
                         <td>{{.ID}}</td>
-                        <td><a href="/admin/reservation/{{.ID}}">{{.LastName}}</a></td>
+                        <td><a href="/admin/reservation/all/{{.ID}}">{{.LastName}}</a></td>
                         <td>{{.Room.RoomName}}</td>
                         <td>{{humanDate .StartDate}}</td>
                         <td>{{humanDate .EndDate}}</td>
