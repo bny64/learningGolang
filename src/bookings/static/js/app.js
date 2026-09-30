@@ -48,7 +48,6 @@ function Prompt() {
       icon: icon,
       title: title,
       html: msg,
-      backdrop: false,
       focusConfirm: false,
       showCancelButton: true,
       showConfirmButton: showConfirmButton,
@@ -62,12 +61,11 @@ function Prompt() {
           c.didOpen();
         }
       },
-      preConfirm: () => {
-        return [
-          document.getElementById("start").value,
-          document.getElementById("end").value,
-        ];
-      },
+      // preConfirm: () => {
+      //   if (c.preConfirm !== undefined) {
+      //     return c.preConfirm();
+      //   }
+      // },
     });
 
     if (result) {
@@ -127,6 +125,12 @@ function CheckAvailability(id, csrfToken) {
         document.getElementById("start").removeAttribute("disabled");
         document.getElementById("end").removeAttribute("disabled");
       },
+      preConfirm: () => {
+        return [
+          document.getElementById("start").value,
+          document.getElementById("end").value,
+        ];
+      },
       callback: function (result) {
         const form = document.getElementById("check-availability-form");
         const formData = new FormData(form);
@@ -156,4 +160,4 @@ function CheckAvailability(id, csrfToken) {
       },
     });
   });
-}
+}
