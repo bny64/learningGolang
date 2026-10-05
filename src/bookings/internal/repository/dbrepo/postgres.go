@@ -518,11 +518,11 @@ func (m *postgreDBRepo) GetRestrictionsForRoomByDate(roomID int, start, end time
 
 	query := `
 		select id, coalesce(reservation_id,0) as reservation_id, restriction_id, room_id, start_date, end_date
-		from room_restrictions
-		where room_id = $1 and start_date <= $2 and end_date < $3
+		from room_restrictions where $1 < end_date and $2 >= start_date 
+		and room_id = $3
 	`
 
-	rows, err := m.DB.QueryContext(ctx, query, roomID, start, end)
+	rows, err := m.DB.QueryContext(ctx, query, start, end, roomID)
 	if err != nil {
 		return restrictions, err
 	}

@@ -615,10 +615,10 @@ func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Re
 	lastMonth := last.Format("01")
 	lastMonthYear := last.Format("2006")
 
-	m.App.Session.Put(r.Context(), "next_month", nextMonth)
-	m.App.Session.Put(r.Context(), "next_month_year", nextMonthYear)
-	m.App.Session.Put(r.Context(), "last_month", lastMonth)
-	m.App.Session.Put(r.Context(), "last_month_year", lastMonthYear)
+	// m.App.Session.Put(r.Context(), "next_month", nextMonth)
+	// m.App.Session.Put(r.Context(), "next_month_year", nextMonthYear)
+	// m.App.Session.Put(r.Context(), "last_month", lastMonth)
+	// m.App.Session.Put(r.Context(), "last_month_year", lastMonthYear)
 
 	stringMap := make(map[string]string)
 	stringMap["next_month"] = nextMonth
@@ -649,8 +649,8 @@ func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Re
 		blockMap := make(map[string]int)
 
 		for d := firstOfMonth; d.After(lastOfMonth) == false; d = d.AddDate(0, 0, 1) {
-			reservationMap[d.Format("2006-01-02")] = 0
-			blockMap[d.Format("2006-01-02")] = 0
+			reservationMap[d.Format("2006-01-2")] = 0
+			blockMap[d.Format("2006-01-2")] = 0
 		}
 
 		restrictions, err := m.DB.GetRestrictionsForRoomByDate(x.ID, firstOfMonth, lastOfMonth)
@@ -662,10 +662,10 @@ func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Re
 		for _, y := range restrictions {
 			if y.ReservationID > 0 {
 				for d := y.StartDate; d.After(y.EndDate) == false; d = d.AddDate(0, 0, 1) {
-					reservationMap[d.Format("2006-01-02")] = y.ReservationID
+					reservationMap[d.Format("2006-01-2")] = y.ReservationID
 				}
 			} else {
-				blockMap[y.StartDate.Format("2006-01-02")] = y.RestrictionID
+				blockMap[y.StartDate.Format("2006-01-2")] = y.ID
 			}
 		}
 
